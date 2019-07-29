@@ -25,7 +25,7 @@ repositories {
 dependencies {
     // This dependency is found on compile classpath of this component and consumers.
     implementation 'es.ull.hpcg:matrix-lib:0.5.2'
-    implementation 'gov.nasa.nas:npb3:0.2-beta-09'
+    implementation 'gov.nasa.nas:npb3:0.1.1'
     implementation group: 'net.sourceforge.argparse4j', name: 'argparse4j', version: '0.8.1'
 
     // Use JUnit test framework
@@ -43,7 +43,19 @@ jar {
     }
 }
 
+gradle.taskGraph.whenReady { taskGraph ->
+    if (taskGraph.hasTask(buildRelease)) {
+        compileJava.options.debug = false
+    } else if (taskGraph.hasTask(buildDebug)) {
+        compileJava.options.debug = true
+        project.version = version + '-debug'
+    }
+}
+
+task buildRelease(type: GradleBuild, dependsOn: build) {}
+task buildDebug(type: GradleBuild, dependsOn: build) {}
+
 sourceCompatibility = 1.8
 
 group 'es.ull.hpcg'
-version '0.1'
+version '0.2'
